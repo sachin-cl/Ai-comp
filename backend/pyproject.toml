@@ -1,0 +1,64 @@
+[project]
+name = "ai-company-backend"
+version = "0.1.0"
+description = "Multi-agent AI software company platform — backend"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115,<1.0",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.8,<3.0",
+    "pydantic-settings>=2.4",
+    "sqlalchemy[asyncio]>=2.0.30,<3.0",
+    "asyncpg>=0.29",
+    "alembic>=1.13",
+    "redis>=5.0",
+    "arq>=0.26",
+    "httpx>=0.27",
+    "pyjwt>=2.9",
+    "bcrypt>=4.1",
+    "structlog>=24.1",
+    "prometheus-client>=0.20",
+    "pyyaml>=6.0",
+    "pgvector>=0.3",
+    "python-multipart>=0.0.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=5.0",
+    "ruff>=0.5",
+    "mypy>=1.10",
+    "aiosqlite>=0.20",
+    "types-pyyaml",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
+ignore = ["B008"]  # FastAPI Depends() in defaults
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+ignore_missing_imports = true
+check_untyped_defs = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.coverage.run]
+source = ["app/domain", "app/application"]

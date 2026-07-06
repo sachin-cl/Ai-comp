@@ -13,7 +13,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.domain import entities as e
 from app.domain.ports import repositories as ports
 from app.domain.value_objects import MemoryCategory, ProjectStatus, TaskStatus, WorkflowStatus
-from app.infrastructure.db import mappers, models as m
+from app.infrastructure.db import mappers
+from app.infrastructure.db import models as m
 
 
 class SqlUserRepository(ports.UserRepository):

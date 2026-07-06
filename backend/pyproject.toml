@@ -6,7 +6,7 @@ requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115,<1.0",
     "uvicorn[standard]>=0.30",
-    "pydantic>=2.8,<3.0",
+    "pydantic[email]>=2.8,<3.0",
     "pydantic-settings>=2.4",
     "sqlalchemy[asyncio]>=2.0.30,<3.0",
     "asyncpg>=0.29",
@@ -47,7 +47,12 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "ASYNC"]
-ignore = ["B008"]  # FastAPI Depends() in defaults
+ignore = [
+    "B008",     # FastAPI Depends() in defaults
+    "ASYNC109", # adapters take an explicit timeout forwarded to httpx
+    "B027",     # optional aclose() hook on the adapter ABC
+    "UP046",    # PEP 695 generics need 3.12+; keep 3.11-compatible Generic[T]
+]
 
 [tool.mypy]
 python_version = "3.12"

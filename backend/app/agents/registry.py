@@ -10,11 +10,11 @@ from typing import Any
 
 import yaml
 
+from app.agents.base import Agent, RoleAgent
 from app.core.config import get_settings
 from app.core.logging import get_logger
 from app.domain.entities import AgentProfile
 from app.domain.ports.llm_gateway import LLMGateway
-from app.agents.base import Agent, RoleAgent
 
 logger = get_logger("agents.registry")
 

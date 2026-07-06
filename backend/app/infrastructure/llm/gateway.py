@@ -133,7 +133,7 @@ class DefaultLLMGateway(LLMGateway):
                     context, provider=provider, model=model, result=result, status="ok"
                 )
                 return result
-            except httpx.TimeoutException as exc:
+            except httpx.TimeoutException:
                 last_error = LLMTimeoutError(f"{provider} call timed out after {self._timeout}s")
                 retryable = True
                 self._breaker.record_failure(provider)

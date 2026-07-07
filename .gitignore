@@ -31,3 +31,6 @@ Thumbs.db
 frontend/test-results/
 frontend/playwright-report/
 .claude/settings.local.json
+
+# Standalone dev mode
+backend/dev.db*

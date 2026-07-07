@@ -52,6 +52,17 @@ async def session_scope() -> AsyncIterator[AsyncSession]:
         await session.close()
 
 
+async def ensure_sqlite_schema() -> None:
+    """Standalone dev mode: SQLite has no Alembic history, so create tables directly.
+    No-op on PostgreSQL, where migrations own the schema."""
+    engine = get_engine()
+    if engine.dialect.name == "sqlite":
+        from app.infrastructure.db.models import Base
+
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+
+
 async def dispose_engine() -> None:
     global _engine, _session_factory
     if _engine is not None:

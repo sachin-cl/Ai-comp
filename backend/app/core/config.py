@@ -1,8 +1,9 @@
 """Application configuration via Pydantic Settings. All values overridable by env vars."""
 from functools import lru_cache
+from typing import Annotated
 
 from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -46,7 +47,10 @@ class Settings(BaseSettings):
     project_create_rate_limit: int = 5
     project_create_rate_window: int = 60
 
-    cors_origins: list[str] = Field(default=["http://localhost:5173", "http://localhost:8080"])
+    # NoDecode: keep the raw comma-separated string; the validator below splits it.
+    cors_origins: Annotated[list[str], NoDecode] = Field(
+        default=["http://localhost:5173", "http://localhost:8080"]
+    )
 
     @field_validator("cors_origins", mode="before")
     @classmethod

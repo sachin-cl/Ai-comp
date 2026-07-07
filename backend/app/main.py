@@ -23,8 +23,10 @@ async def lifespan(app: FastAPI):
     settings = get_settings()
     configure_logging(settings.log_level, json_output=True)
     from app.agents.registry import sync_agents_to_db
+    from app.infrastructure.db.engine import ensure_sqlite_schema
 
     try:
+        await ensure_sqlite_schema()
         await sync_agents_to_db()
     except Exception:
         # DB may not be migrated yet (e.g. first boot race); seeding also runs in worker.

@@ -48,11 +48,17 @@ class ArqTaskQueue(TaskQueue):
         return int(await pool.zcard("arq:queue"))
 
 
-_queue: ArqTaskQueue | None = None
+_queue: TaskQueue | None = None
 
 
-def get_task_queue() -> ArqTaskQueue:
+def get_task_queue() -> TaskQueue:
+    """ARQ normally; InlineTaskQueue when REDIS_URL=memory:// (standalone dev)."""
     global _queue
     if _queue is None:
-        _queue = ArqTaskQueue()
+        if get_settings().redis_url.startswith("memory://"):
+            from app.infrastructure.redis.memory_backend import InlineTaskQueue
+
+            _queue = InlineTaskQueue()
+        else:
+            _queue = ArqTaskQueue()
     return _queue

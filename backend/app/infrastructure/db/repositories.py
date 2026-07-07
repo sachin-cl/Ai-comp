@@ -290,7 +290,8 @@ class SqlTaskRepository(ports.TaskRepository):
             .where(m.TaskModel.id == task_id, m.TaskModel.status == TaskStatus.QUEUED.value)
             .values(status=TaskStatus.RUNNING.value, started_at=func.now())
         )
-        return result.rowcount > 0
+        rowcount: int = getattr(result, "rowcount", 0)  # CursorResult at runtime
+        return rowcount > 0
 
     async def add_dependency(self, task_id: uuid.UUID, depends_on: uuid.UUID) -> None:
         self.session.add(m.TaskDependencyModel(task_id=task_id, depends_on_task_id=depends_on))

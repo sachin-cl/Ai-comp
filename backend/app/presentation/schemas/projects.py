@@ -54,6 +54,13 @@ class ApprovalRequest(BaseModel):
     feedback: str = Field(default="", max_length=4000)
 
 
+class ReviewInfo(BaseModel):
+    verdict: str
+    reasons: list[dict[str, Any]] = Field(default_factory=list)
+    round: int = 0
+    created_at: datetime | None = None
+
+
 class TaskResponse(BaseModel):
     id: uuid.UUID
     project_id: uuid.UUID
@@ -72,6 +79,7 @@ class TaskResponse(BaseModel):
     started_at: datetime | None = None
     finished_at: datetime | None = None
     created_at: datetime | None = None
+    reviews: list[ReviewInfo] | None = None
 
 
 class MessageResponse(BaseModel):

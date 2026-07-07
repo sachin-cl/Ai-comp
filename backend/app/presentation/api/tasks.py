@@ -14,7 +14,7 @@ from app.infrastructure.db.repositories import (
 )
 from app.infrastructure.redis.queue import get_task_queue
 from app.presentation.deps import CurrentUser, DbSession
-from app.presentation.schemas.projects import MessageResponse, TaskResponse
+from app.presentation.schemas.projects import MessageResponse, ReviewInfo, TaskResponse
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
@@ -32,7 +32,7 @@ async def get_task(task_id: uuid.UUID, session: DbSession, user: CurrentUser) ->
     task = await _get_task_checked(session, task_id, user)
     agents = {a.id: a for a in await SqlAgentRepository(session).list_active()}
     reviews = await SqlReviewRepository(session).list_for_task(task_id)
-    response = TaskResponse(
+    return TaskResponse(
         id=task.id, project_id=task.project_id, node_key=task.node_key, title=task.title,
         description=task.description, status=task.status.value,
         agent_key=agents[task.agent_id].key if task.agent_id in agents else "",
@@ -40,18 +40,12 @@ async def get_task(task_id: uuid.UUID, session: DbSession, user: CurrentUser) ->
         attempt=task.attempt, revision_round=task.revision_round, output=task.output,
         error=task.error, depends_on=task.depends_on, queued_at=task.queued_at,
         started_at=task.started_at, finished_at=task.finished_at, created_at=task.created_at,
+        reviews=[
+            ReviewInfo(verdict=r.verdict.value, reasons=r.reasons, round=r.round,
+                       created_at=r.created_at)
+            for r in reviews
+        ],
     )
-    payload = response.model_dump()
-    payload["reviews"] = [
-        {
-            "verdict": r.verdict.value,
-            "reasons": r.reasons,
-            "round": r.round,
-            "created_at": r.created_at,
-        }
-        for r in reviews
-    ]
-    return payload
 
 
 @router.get("/{task_id}/messages", response_model=list[MessageResponse])
